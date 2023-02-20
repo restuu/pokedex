@@ -1,8 +1,15 @@
 package model
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"database/sql"
+	"time"
+)
 
 type Pokemon struct {
-	ID   primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Name string             `bson:"name" json:"name"`
+	ID        uint         `gorm:"primarykey,autoIncrement"`
+	CreatedAt time.Time    `gorm:"autoCreateTime"`
+	UpdatedAt time.Time    `gorm:"autoUpdateTime"`
+	DeletedAt sql.NullTime `gorm:"index"`
+
+	Name string `gorm:"not null;unique"`
 }

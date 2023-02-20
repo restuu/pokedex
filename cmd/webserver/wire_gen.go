@@ -8,35 +8,30 @@ package main
 
 import (
 	"context"
-	"pokedex/pkg/datastore/mgo"
+	"pokedex/pkg/app"
+	"pokedex/pkg/datastore/mysql"
 	"pokedex/pkg/pokemon/repository"
-	"pokedex/pkg/pokemon/service"
+	service2 "pokedex/pkg/pokemon/service"
 )
 
 // Injectors from wire.go:
 
-func initializeApp(ctx context.Context, dbUri mgo.DbUri, dbName mgo.DbName) (*App, error) {
-	client, err := mgo.NewClient(ctx, dbUri)
+func initializeApp(ctx context.Context, conf *app.Config, dbUri string) (*server, error) {
+	db, err := mysql.Connect(ctx, dbUri)
 	if err != nil {
 		return nil, err
 	}
-	database := mgo.NewDatabase(client, dbName)
-	pokemonRepository := repository.NewPokemonRepository(database)
-	pokemonAddingService := service.NewPokemonAddingService(pokemonRepository)
-	app := NewApp(pokemonAddingService)
-	return app, nil
+	pokemonRepository := repository.NewPokemonRepository(db)
+	pokemonAddingService := service2.NewPokemonAddingService(pokemonRepository)
+	mainService := &service{
+		pokemonAddingService: pokemonAddingService,
+	}
+	mainServer := NewServer(mainService, conf)
+	return mainServer, nil
 }
 
 // wire.go:
 
-type App struct {
-	pokemonAddingService service.PokemonAddingService
-}
-
-func NewApp(
-	pokemonAddingService service.PokemonAddingService,
-) *App {
-	return &App{
-		pokemonAddingService: pokemonAddingService,
-	}
+type service struct {
+	pokemonAddingService service2.PokemonAddingService
 }

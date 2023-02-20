@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"pokedex/pkg/app"
-	"pokedex/pkg/datastore/mgo"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -30,9 +29,7 @@ var rootCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		fmt.Println(conf)
-
-		initializeApp(cmd.Context(), mgo.DbUri(conf.DbUri), mgo.DbName(conf.DbName))
+		start(cmd.Context(), conf)
 	},
 }
 

@@ -5,33 +5,26 @@ package main
 
 import (
 	"context"
-	"pokedex/pkg/datastore/mgo"
+	"pokedex/pkg/app"
+	"pokedex/pkg/datastore/mysql"
 	pokemonRepository "pokedex/pkg/pokemon/repository"
 	pokemonService "pokedex/pkg/pokemon/service"
 
 	"github.com/google/wire"
 )
 
-func initializeApp(ctx context.Context, dbUri mgo.DbUri, dbName mgo.DbName) (*App, error) {
+func initializeApp(ctx context.Context, conf *app.Config, dbUri string) (*server, error) {
 
-	wire.Build(NewApp,
-		pokemonService.NewPokemonAddingService,
+	wire.Build(
+		NewServer,
+		wire.Struct(new(service), "*"),
+		mysql.Connect,
 		pokemonRepository.NewPokemonRepository,
-		mgo.NewDatabase,
-		mgo.NewClient,
+		pokemonService.NewPokemonAddingService,
 	)
-
-	return &App{}, nil
+	return nil, nil // This will be overwritten by the wire compiler.
 }
 
-type App struct {
+type service struct {
 	pokemonAddingService pokemonService.PokemonAddingService
-}
-
-func NewApp(
-	pokemonAddingService pokemonService.PokemonAddingService,
-) *App {
-	return &App{
-		pokemonAddingService: pokemonAddingService,
-	}
 }

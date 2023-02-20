@@ -4,34 +4,32 @@ import (
 	"context"
 	"pokedex/pkg/pokemon/model"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
+	"gorm.io/gorm"
 )
 
 type PokemonRepository interface {
-	Add(ctx context.Context, pokemon model.Pokemon) (*primitive.ObjectID, error)
+	Add(ctx context.Context, pokemon model.Pokemon) (*uint, error)
 }
 
 type pokemonMgoRepo struct {
-	col *mongo.Collection
+	model *gorm.DB
 }
 
-const (
-	collectionName = "pokemons"
-)
+func NewPokemonRepository(db *gorm.DB) PokemonRepository {
 
-func NewPokemonRepository(db *mongo.Database) PokemonRepository {
+	db.AutoMigrate(model.Pokemon{})
+
 	return &pokemonMgoRepo{
-		col: db.Collection(collectionName),
+		model: db.Model(model.Pokemon{}),
 	}
 }
 
-func (r *pokemonMgoRepo) Add(ctx context.Context, pokemon model.Pokemon) (*primitive.ObjectID, error) {
-	result, err := r.col.InsertOne(ctx, pokemon)
+func (r *pokemonMgoRepo) Add(ctx context.Context, pokemon model.Pokemon) (*uint, error) {
+	err := r.model.Create(&pokemon).Error
+
 	if err != nil {
 		return nil, err
 	}
 
-	oid := result.InsertedID.(primitive.ObjectID)
-	return &oid, nil
+	return &pokemon.ID, nil
 }
