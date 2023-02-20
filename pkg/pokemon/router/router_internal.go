@@ -1,6 +1,8 @@
 package router
 
 import (
+	"fmt"
+	"pokedex/pkg/app"
 	"pokedex/pkg/pokemon/dto"
 	"pokedex/pkg/pokemon/service"
 
@@ -8,9 +10,12 @@ import (
 )
 
 func NewPokemonInternalRouter(e *echo.Echo,
+	conf *app.Config,
 	pokemonAddingService service.PokemonAddingService,
 ) {
 	g := e.Group("/internal/pokemon")
+	//TODO: Re enable when ready
+	// g.Use(myjwt.Middleware(conf.JWTKey), myjwt.IsAdmin())
 
 	h := &pokemonInternalHandler{
 		pokemonAddingService: pokemonAddingService,
@@ -35,6 +40,9 @@ func (h *pokemonInternalHandler) Add(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+
+	fmt.Println("--------------")
+	fmt.Println(newPokemon)
 
 	c.JSON(200, newPokemon)
 

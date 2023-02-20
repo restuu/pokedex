@@ -5,10 +5,11 @@ import (
 	"pokedex/pkg/pokemon/dto"
 	"pokedex/pkg/pokemon/model"
 	"pokedex/pkg/pokemon/repository"
+	"pokedex/pkg/pokemon/util"
 )
 
 type PokemonAddingService interface {
-	Add(ctx context.Context, pokemon dto.PokemonAddRequest) (*model.Pokemon, error)
+	Add(ctx context.Context, pokemon dto.PokemonAddRequest) (*dto.PokemonResponse, error)
 }
 
 func NewPokemonAddingService(
@@ -25,18 +26,18 @@ type pokemonAddingService struct {
 	pokemonRepo repository.PokemonRepository
 }
 
-func (s *pokemonAddingService) Add(ctx context.Context, pokemon dto.PokemonAddRequest) (*model.Pokemon, error) {
+func (s *pokemonAddingService) Add(ctx context.Context, pokemon dto.PokemonAddRequest) (*dto.PokemonResponse, error) {
 
 	pokemonModel := model.Pokemon{
 		Name: pokemon.Name,
 	}
 
-	newID, err := s.pokemonRepo.Add(ctx, pokemonModel)
+	newPokemon, err := s.pokemonRepo.Add(ctx, pokemonModel)
 	if err != nil {
 		return nil, err
 	}
 
-	pokemonModel.ID = *newID
+	pokemonResponse := util.PokemonToPokemonResponse(*newPokemon)
+	return &pokemonResponse, nil
 
-	return &pokemonModel, nil
 }
