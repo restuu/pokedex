@@ -21,10 +21,12 @@ func initializeApp(ctx context.Context, conf *app.Config, dbUri string) (*server
 		mysql.Connect,
 		pokemonRepository.NewPokemonRepository,
 		pokemonService.NewPokemonAddingService,
+		pokemonService.NewPokemonGettingService,
 	)
 	return nil, nil // This will be overwritten by the wire compiler.
 }
 
 type service struct {
-	pokemonAddingService pokemonService.PokemonAddingService
+	pokemonAddingService  pokemonService.PokemonAddingService
+	pokemonGettingService pokemonService.PokemonGettingService
 }

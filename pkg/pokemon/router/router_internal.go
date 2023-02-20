@@ -13,7 +13,7 @@ func NewPokemonInternalRouter(e *echo.Echo,
 	conf *app.Config,
 	pokemonAddingService service.PokemonAddingService,
 ) {
-	g := e.Group("/internal/pokemon")
+	g := e.Group("/internal/pokemons")
 	//TODO: Re enable when ready
 	// g.Use(myjwt.Middleware(conf.JWTKey), myjwt.IsAdmin())
 
