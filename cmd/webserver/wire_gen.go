@@ -24,9 +24,11 @@ func initializeApp(ctx context.Context, conf *app.Config, dbUri string) (*server
 	pokemonRepository := repository.NewPokemonRepository(db)
 	pokemonAddingService := service2.NewPokemonAddingService(pokemonRepository)
 	pokemonGettingService := service2.NewPokemonGettingService(pokemonRepository)
+	pokemonUpdatingService := service2.NewPokemonUpdatingService(pokemonRepository)
 	mainService := &service{
-		pokemonAddingService:  pokemonAddingService,
-		pokemonGettingService: pokemonGettingService,
+		pokemonAddingService:   pokemonAddingService,
+		pokemonGettingService:  pokemonGettingService,
+		pokemonUpdatingService: pokemonUpdatingService,
 	}
 	mainServer := NewServer(mainService, conf)
 	return mainServer, nil
@@ -35,6 +37,7 @@ func initializeApp(ctx context.Context, conf *app.Config, dbUri string) (*server
 // wire.go:
 
 type service struct {
-	pokemonAddingService  service2.PokemonAddingService
-	pokemonGettingService service2.PokemonGettingService
+	pokemonAddingService   service2.PokemonAddingService
+	pokemonGettingService  service2.PokemonGettingService
+	pokemonUpdatingService service2.PokemonUpdatingService
 }

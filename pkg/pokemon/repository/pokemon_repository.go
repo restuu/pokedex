@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"pokedex/pkg/pokemon/model"
 	"sync"
@@ -12,6 +13,8 @@ import (
 type PokemonRepository interface {
 	Add(ctx context.Context, pokemon model.Pokemon) (*model.Pokemon, error)
 	FindAll(ctx context.Context) ([]model.Pokemon, error)
+	FindByID(ctx context.Context, id uint) (*model.Pokemon, error)
+	Save(ctx context.Context, pokemon model.Pokemon) (*model.Pokemon, error)
 }
 
 type pokemonRepo struct {
@@ -63,4 +66,34 @@ func (r *pokemonRepo) FindAll(ctx context.Context) ([]model.Pokemon, error) {
 		Error
 
 	return all, err
+}
+
+func (r *pokemonRepo) FindByID(ctx context.Context, id uint) (*model.Pokemon, error) {
+	m := new(model.Pokemon)
+
+	err := r.model.
+		First(m, model.Pokemon{ID: id}).
+		WithContext(ctx).
+		Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return m, nil
+}
+
+func (r *pokemonRepo) Save(ctx context.Context, pokemon model.Pokemon) (*model.Pokemon, error) {
+
+	updated := pokemon
+
+	err := r.model.
+		WithContext(ctx).
+		Save(&updated).
+		Error
+
+	return &updated, err
 }

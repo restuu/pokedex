@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"pokedex/pkg/pokemon/constant"
 	"time"
 )
 
@@ -11,5 +12,7 @@ type Pokemon struct {
 	UpdatedAt time.Time    `gorm:"autoUpdateTime" json:"updated_at"`
 	DeletedAt sql.NullTime `gorm:"index" json:"deleted_at,omitempty"`
 
-	Name string `gorm:"not null;unique" json:"name"`
+	Name     string               `gorm:"not null;unique" json:"name"`
+	Type     constant.PokemonType `gorm:"index"`
+	ImageURL string
 }

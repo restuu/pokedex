@@ -42,7 +42,7 @@ func (s *server) Start() {
 	e := route()
 
 	//#region register router
-	pokemonRouter.NewPokemonInternalRouter(e, s.conf, s.service.pokemonAddingService)
+	pokemonRouter.NewPokemonInternalRouter(e, s.conf, s.service.pokemonAddingService, s.service.pokemonUpdatingService)
 	pokemonRouter.NewPokemonRouter(e, s.service.pokemonGettingService)
 	//#endregion register router
 

@@ -9,6 +9,8 @@ func PokemonToPokemonResponse(pokemon model.Pokemon) dto.PokemonResponse {
 	dto := dto.PokemonResponse{
 		ID:        pokemon.ID,
 		Name:      pokemon.Name,
+		Type:      pokemon.Type,
+		ImageURL:  pokemon.ImageURL,
 		CreatedAt: pokemon.CreatedAt,
 		UpdatedAt: pokemon.UpdatedAt,
 	}
